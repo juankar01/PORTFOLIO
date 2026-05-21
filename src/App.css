@@ -1,0 +1,61 @@
+.desktop-area {
+  flex: 1;
+  position: relative;
+  padding: 24px;
+  background-repeat: repeat;
+  background-size: auto;
+}
+
+.desktop-icon {
+  border: none;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+  gap: 6px;
+}
+
+.desktop-icon-image {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.icon-label {
+  background: #fff;
+  padding: 2px 6px;
+  border: 1px solid #000;
+  font-size: 14px;
+  color: #000;
+}
+
+.finder-folder {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.finder-folder-image {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.finder-folder-title {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.finder-folder small {
+  margin-top: 4px;
+  font-size: 13px;
+}
