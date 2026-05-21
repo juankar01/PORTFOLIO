@@ -22,5 +22,7 @@ export type PortfolioWindow = {
   zIndex: number;
   x: number;
   y: number;
+  width: number;
+  height: number;
   folderId?: FolderId;
 };

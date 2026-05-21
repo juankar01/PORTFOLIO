@@ -11,6 +11,7 @@ type FinderWindowProps = {
   onClose: () => void;
   onFocus: () => void;
   onStartDrag: (event: PointerEvent<HTMLElement>) => void;
+  onStartResize: (event: PointerEvent<HTMLElement>) => void;
 };
 
 export default function FinderWindow({
@@ -21,12 +22,13 @@ export default function FinderWindow({
   onClose,
   onFocus,
   onStartDrag,
+  onStartResize,
 }: FinderWindowProps) {
   const selectedContent = windowItem.folderId
     ? folderContent[windowItem.folderId]
     : null;
 
-  const isFolderWindow = windowItem.type === "folder" && selectedContent;
+  const isFolderWindow = windowItem.type === "folder" && selectedContent !== null;
 
   return (
     <section
@@ -36,6 +38,8 @@ export default function FinderWindow({
         left: `${windowItem.x}px`,
         top: `${windowItem.y}px`,
         zIndex: windowItem.zIndex,
+        width: `${windowItem.width}px`,
+        height: `${windowItem.height}px`,
       }}
     >
       <header
@@ -147,6 +151,12 @@ export default function FinderWindow({
           ))}
         </div>
       )}
+
+      <button
+        className="window-resize-handle"
+        onPointerDown={onStartResize}
+        aria-label="Redimensionar ventana"
+      />
     </section>
   );
 }

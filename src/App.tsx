@@ -16,12 +16,25 @@ import "./index.css";
 
 const WINDOWS_STORAGE_KEY = "retro-portfolio-open-windows";
 
+const DEFAULT_WINDOW_WIDTH = 900;
+const DEFAULT_WINDOW_HEIGHT = 500;
+const MIN_WINDOW_WIDTH = 420;
+const MIN_WINDOW_HEIGHT = 300;
+
 type DragState = {
   windowId: string;
   startPointerX: number;
   startPointerY: number;
   startWindowX: number;
   startWindowY: number;
+};
+
+type ResizeState = {
+  windowId: string;
+  startPointerX: number;
+  startPointerY: number;
+  startWindowWidth: number;
+  startWindowHeight: number;
 };
 
 function getStoredWindows(): PortfolioWindow[] {
@@ -32,13 +45,23 @@ function getStoredWindows(): PortfolioWindow[] {
   }
 
   try {
-    const parsedWindows = JSON.parse(storedWindows);
+    const parsedWindows = JSON.parse(storedWindows) as PortfolioWindow[];
 
     if (!Array.isArray(parsedWindows)) {
       return [];
     }
 
-    return parsedWindows;
+    return parsedWindows.map((windowItem) => ({
+      ...windowItem,
+      width:
+        typeof windowItem.width === "number"
+          ? windowItem.width
+          : DEFAULT_WINDOW_WIDTH,
+      height:
+        typeof windowItem.height === "number"
+          ? windowItem.height
+          : DEFAULT_WINDOW_HEIGHT,
+    }));
   } catch {
     return [];
   }
@@ -61,11 +84,22 @@ function getWindowPosition(windows: PortfolioWindow[]) {
   };
 }
 
+function getDefaultWindowSize() {
+  const maxWidth = Math.max(MIN_WINDOW_WIDTH, window.innerWidth - 32);
+  const maxHeight = Math.max(MIN_WINDOW_HEIGHT, window.innerHeight - 70);
+
+  return {
+    width: Math.min(DEFAULT_WINDOW_WIDTH, maxWidth),
+    height: Math.min(DEFAULT_WINDOW_HEIGHT, maxHeight),
+  };
+}
+
 export default function App() {
   const [openWindows, setOpenWindows] =
     useState<PortfolioWindow[]>(getStoredWindows);
 
   const [dragState, setDragState] = useState<DragState | null>(null);
+  const [resizeState, setResizeState] = useState<ResizeState | null>(null);
 
   useEffect(() => {
     localStorage.setItem(WINDOWS_STORAGE_KEY, JSON.stringify(openWindows));
@@ -108,6 +142,58 @@ export default function App() {
     };
   }, [dragState]);
 
+  useEffect(() => {
+    if (!resizeState) {
+      return;
+    }
+
+    const currentResize = resizeState;
+
+    function handlePointerMove(event: globalThis.PointerEvent) {
+      const deltaX = event.clientX - currentResize.startPointerX;
+      const deltaY = event.clientY - currentResize.startPointerY;
+
+      const maxWidth = Math.max(MIN_WINDOW_WIDTH, window.innerWidth - 32);
+      const maxHeight = Math.max(MIN_WINDOW_HEIGHT, window.innerHeight - 70);
+
+      setOpenWindows((currentWindows) =>
+        currentWindows.map((windowItem) =>
+          windowItem.id === currentResize.windowId
+            ? {
+                ...windowItem,
+                width: Math.min(
+                  maxWidth,
+                  Math.max(
+                    MIN_WINDOW_WIDTH,
+                    currentResize.startWindowWidth + deltaX,
+                  ),
+                ),
+                height: Math.min(
+                  maxHeight,
+                  Math.max(
+                    MIN_WINDOW_HEIGHT,
+                    currentResize.startWindowHeight + deltaY,
+                  ),
+                ),
+              }
+            : windowItem,
+        ),
+      );
+    }
+
+    function handlePointerUp() {
+      setResizeState(null);
+    }
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [resizeState]);
+
   function bringWindowToFront(windowId: string) {
     setOpenWindows((currentWindows) => {
       const nextZIndex = getNextZIndex(currentWindows);
@@ -124,6 +210,8 @@ export default function App() {
     windowId: string,
     event: PointerEvent<HTMLElement>,
   ) {
+    event.preventDefault();
+
     const selectedWindow = openWindows.find(
       (windowItem) => windowItem.id === windowId,
     );
@@ -140,6 +228,32 @@ export default function App() {
       startPointerY: event.clientY,
       startWindowX: selectedWindow.x,
       startWindowY: selectedWindow.y,
+    });
+  }
+
+  function startWindowResize(
+    windowId: string,
+    event: PointerEvent<HTMLElement>,
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const selectedWindow = openWindows.find(
+      (windowItem) => windowItem.id === windowId,
+    );
+
+    if (!selectedWindow) {
+      return;
+    }
+
+    bringWindowToFront(windowId);
+
+    setResizeState({
+      windowId,
+      startPointerX: event.clientX,
+      startPointerY: event.clientY,
+      startWindowWidth: selectedWindow.width,
+      startWindowHeight: selectedWindow.height,
     });
   }
 
@@ -160,6 +274,7 @@ export default function App() {
       }
 
       const position = getWindowPosition(currentWindows);
+      const size = getDefaultWindowSize();
 
       return [
         ...currentWindows,
@@ -170,6 +285,8 @@ export default function App() {
           zIndex: nextZIndex,
           x: position.x,
           y: position.y,
+          width: size.width,
+          height: size.height,
         },
       ];
     });
@@ -193,6 +310,7 @@ export default function App() {
       }
 
       const position = getWindowPosition(currentWindows);
+      const size = getDefaultWindowSize();
       const content = folderContent[folderId];
 
       return [
@@ -205,6 +323,8 @@ export default function App() {
           zIndex: nextZIndex,
           x: position.x,
           y: position.y,
+          width: size.width,
+          height: size.height,
         },
       ];
     });
@@ -255,6 +375,7 @@ export default function App() {
             onClose={() => closeWindow(windowItem.id)}
             onFocus={() => bringWindowToFront(windowItem.id)}
             onStartDrag={(event) => startWindowDrag(windowItem.id, event)}
+            onStartResize={(event) => startWindowResize(windowItem.id, event)}
           />
         ))}
       </section>
