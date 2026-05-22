@@ -42,12 +42,12 @@ export const folderContent: Record<FolderId, FolderContent> = {
     title: "Contacto",
     subtitle: "Contact File",
     description:
-      "Estoy disponible para realizar mi etapa práctica y abierta a oportunidades donde pueda aprender, aportar y crecer.",
+      "Estoy disponible para realizar mi etapa práctica y abierto a oportunidades donde pueda aprender, aportar y crecer.",
     items: [
-      "Correo: tu-correo@email.com",
-      "GitHub: github.com/tuusuario",
-      "LinkedIn: linkedin.com/in/tuusuario",
-      "CV: disponible para descargar",
+      "Correo: juanjoseotalvaro283@gmail.com",
+      "GitHub: ",
+      "LinkedIn: ",
+      "CV: ",
     ],
   },
 };
