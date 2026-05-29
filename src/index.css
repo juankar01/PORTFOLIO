@@ -159,10 +159,10 @@ button {
 
 .finder-window {
   position: absolute;
-  min-width: 420px;
-  min-height: 300px;
-  max-width: calc(100vw - 32px);
-  max-height: calc(100dvh - 70px);
+  min-width: 280px;
+  min-height: 280px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 56px);
   background: #efefef;
   border: 2px solid #000;
   box-shadow: 4px 4px 0 #555;
@@ -465,25 +465,16 @@ button {
   height: 170px;
   border: 3px solid #000;
   background: #efefef;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   box-shadow: 4px 4px 0 #000;
-  position: relative;
+  overflow: hidden;
 }
 
-.profile-photo-placeholder::before {
-  content: "";
-  position: absolute;
-  inset: 8px;
-  border: 2px dashed #777;
-}
-
-.profile-photo-placeholder span {
-  position: relative;
-  z-index: 1;
-  font-size: 18px;
-  color: #555;
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: auto;
+  display: block;
 }
 
 .folder-detail-description {
@@ -514,6 +505,33 @@ button {
 .folder-detail-item:hover {
   background: #000;
   color: #fff;
+}
+
+.folder-detail-links {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+  max-width: 760px;
+}
+
+.folder-detail-link {
+  width: fit-content;
+  max-width: 100%;
+  background: #fff;
+  border: 2px solid #000;
+  padding: 8px 12px;
+  font-size: 17px;
+  line-height: 1.3;
+  color: #000;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 #000;
+}
+
+.folder-detail-link:hover,
+.folder-detail-link:focus-visible {
+  background: #000;
+  color: #fff;
+  outline: none;
 }
 
 /* =========================
@@ -576,9 +594,13 @@ button {
     height: 22px;
   }
 
+  .desktop-area {
+    padding: 12px;
+  }
+
   .desktop-icons {
-    top: 18px;
-    right: 18px;
+    top: 14px;
+    right: 14px;
     gap: 24px;
   }
 
@@ -592,7 +614,8 @@ button {
   }
 
   .finder-window {
-    min-width: 300px;
+    min-width: 280px;
+    min-height: 280px;
     max-width: calc(100vw - 24px);
     max-height: calc(100dvh - 48px);
   }
@@ -650,14 +673,14 @@ button {
   }
 
   .window-content {
-    grid-template-columns: repeat(2, minmax(130px, 1fr));
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
     gap: 30px 20px;
-    padding: 36px 16px 28px;
+    padding: 34px 14px 28px;
   }
 
   .finder-folder {
-    width: 130px;
-    min-height: 110px;
+    width: 120px;
+    min-height: 108px;
     grid-template-rows: 66px auto auto;
   }
 
@@ -709,7 +732,8 @@ button {
     line-height: 1.35;
   }
 
-  .folder-detail-item {
+  .folder-detail-item,
+  .folder-detail-link {
     font-size: 15px;
   }
 }

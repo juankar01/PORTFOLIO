@@ -6,11 +6,17 @@ export type FolderItem = {
   items: number;
 };
 
+export type FolderLink = {
+  label: string;
+  url: string;
+};
+
 export type FolderContent = {
   title: string;
   subtitle: string;
   description: string;
   items: string[];
+  links?: FolderLink[];
 };
 
 export type PortfolioWindowType = "finder" | "folder";

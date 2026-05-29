@@ -1,5 +1,6 @@
 import type { PointerEvent } from "react";
 
+import profilePhoto from "../assets/retro/profile-photo.png";
 import { folderContent } from "../data/folderContent";
 import type { FolderId, FolderItem, PortfolioWindow } from "../types/portfolio";
 
@@ -29,6 +30,28 @@ export default function FinderWindow({
     : null;
 
   const isFolderWindow = windowItem.type === "folder" && selectedContent !== null;
+
+  function renderLinks() {
+    if (!selectedContent?.links?.length) {
+      return null;
+    }
+
+    return (
+      <div className="folder-detail-links">
+        {selectedContent.links.map((link) => (
+          <a
+            key={link.url}
+            className="folder-detail-link"
+            href={link.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <section
@@ -104,10 +127,17 @@ export default function FinderWindow({
                         </div>
                       ))}
                     </div>
+
+                    {renderLinks()}
                   </div>
 
                   <div className="profile-photo-placeholder">
-                    <span>Foto</span>
+                    <img
+                      className="profile-photo"
+                      src={profilePhoto}
+                      alt="Foto de perfil"
+                      draggable={false}
+                    />
                   </div>
                 </div>
               ) : (
@@ -123,6 +153,8 @@ export default function FinderWindow({
                       </div>
                     ))}
                   </div>
+
+                  {renderLinks()}
                 </>
               )}
             </div>

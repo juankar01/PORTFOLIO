@@ -10,7 +10,6 @@ import type { FolderId, PortfolioWindow } from "./types/portfolio";
 import navbarLogo from "./assets/retro/apple-logo.png";
 import portfolioFolderIcon from "./assets/retro/portfolio-folder.png";
 import folderIcon from "./assets/retro/folder.png";
-import trashIcon from "./assets/retro/trash.png";
 
 import "./index.css";
 
@@ -18,8 +17,9 @@ const WINDOWS_STORAGE_KEY = "retro-portfolio-open-windows";
 
 const DEFAULT_WINDOW_WIDTH = 900;
 const DEFAULT_WINDOW_HEIGHT = 500;
-const MIN_WINDOW_WIDTH = 420;
-const MIN_WINDOW_HEIGHT = 300;
+const MIN_WINDOW_WIDTH = 280;
+const MIN_WINDOW_HEIGHT = 280;
+const DESKTOP_EDGE_PADDING = 12;
 
 type DragState = {
   windowId: string;
@@ -37,6 +37,64 @@ type ResizeState = {
   startWindowHeight: number;
 };
 
+function getMenuBarHeight() {
+  return window.innerWidth <= 768 ? 36 : 42;
+}
+
+function getViewportLimits() {
+  const menuBarHeight = getMenuBarHeight();
+
+  return {
+    maxWidth: Math.max(
+      MIN_WINDOW_WIDTH,
+      window.innerWidth - DESKTOP_EDGE_PADDING * 2,
+    ),
+    maxHeight: Math.max(
+      MIN_WINDOW_HEIGHT,
+      window.innerHeight - menuBarHeight - DESKTOP_EDGE_PADDING * 2,
+    ),
+    desktopHeight: window.innerHeight - menuBarHeight,
+  };
+}
+
+function clampWindowFrame(windowItem: PortfolioWindow): PortfolioWindow {
+  const limits = getViewportLimits();
+
+  const width = Math.min(
+    limits.maxWidth,
+    Math.max(MIN_WINDOW_WIDTH, windowItem.width ?? DEFAULT_WINDOW_WIDTH),
+  );
+
+  const height = Math.min(
+    limits.maxHeight,
+    Math.max(MIN_WINDOW_HEIGHT, windowItem.height ?? DEFAULT_WINDOW_HEIGHT),
+  );
+
+  const maxX = Math.max(
+    DESKTOP_EDGE_PADDING,
+    window.innerWidth - width - DESKTOP_EDGE_PADDING,
+  );
+
+  const maxY = Math.max(
+    DESKTOP_EDGE_PADDING,
+    limits.desktopHeight - height - DESKTOP_EDGE_PADDING,
+  );
+
+  return {
+    ...windowItem,
+    width,
+    height,
+    x: Math.min(
+      maxX,
+      Math.max(DESKTOP_EDGE_PADDING, windowItem.x ?? DESKTOP_EDGE_PADDING),
+    ),
+    y: Math.min(
+      maxY,
+      Math.max(DESKTOP_EDGE_PADDING, windowItem.y ?? DESKTOP_EDGE_PADDING),
+    ),
+  };
+}
+
 function getStoredWindows(): PortfolioWindow[] {
   const storedWindows = localStorage.getItem(WINDOWS_STORAGE_KEY);
 
@@ -51,17 +109,7 @@ function getStoredWindows(): PortfolioWindow[] {
       return [];
     }
 
-    return parsedWindows.map((windowItem) => ({
-      ...windowItem,
-      width:
-        typeof windowItem.width === "number"
-          ? windowItem.width
-          : DEFAULT_WINDOW_WIDTH,
-      height:
-        typeof windowItem.height === "number"
-          ? windowItem.height
-          : DEFAULT_WINDOW_HEIGHT,
-    }));
+    return parsedWindows.map(clampWindowFrame);
   } catch {
     return [];
   }
@@ -75,22 +123,40 @@ function getNextZIndex(windows: PortfolioWindow[]) {
   return Math.max(...windows.map((windowItem) => windowItem.zIndex)) + 1;
 }
 
-function getWindowPosition(windows: PortfolioWindow[]) {
-  const offset = windows.length * 28;
+function getDefaultWindowSize() {
+  const limits = getViewportLimits();
 
   return {
-    x: 70 + offset,
-    y: 90 + offset,
+    width: Math.min(DEFAULT_WINDOW_WIDTH, limits.maxWidth),
+    height: Math.min(DEFAULT_WINDOW_HEIGHT, limits.maxHeight),
   };
 }
 
-function getDefaultWindowSize() {
-  const maxWidth = Math.max(MIN_WINDOW_WIDTH, window.innerWidth - 32);
-  const maxHeight = Math.max(MIN_WINDOW_HEIGHT, window.innerHeight - 70);
+function getWindowPosition(
+  windows: PortfolioWindow[],
+  width: number,
+  height: number,
+) {
+  const limits = getViewportLimits();
+  const isMobile = window.innerWidth <= 768;
+  const offset = (windows.length % 6) * (isMobile ? 14 : 28);
+
+  const rawX = isMobile ? DESKTOP_EDGE_PADDING + offset : 70 + offset;
+  const rawY = isMobile ? DESKTOP_EDGE_PADDING + offset : 90 + offset;
+
+  const maxX = Math.max(
+    DESKTOP_EDGE_PADDING,
+    window.innerWidth - width - DESKTOP_EDGE_PADDING,
+  );
+
+  const maxY = Math.max(
+    DESKTOP_EDGE_PADDING,
+    limits.desktopHeight - height - DESKTOP_EDGE_PADDING,
+  );
 
   return {
-    width: Math.min(DEFAULT_WINDOW_WIDTH, maxWidth),
-    height: Math.min(DEFAULT_WINDOW_HEIGHT, maxHeight),
+    x: Math.min(maxX, Math.max(DESKTOP_EDGE_PADDING, rawX)),
+    y: Math.min(maxY, Math.max(DESKTOP_EDGE_PADDING, rawY)),
   };
 }
 
@@ -106,6 +172,18 @@ export default function App() {
   }, [openWindows]);
 
   useEffect(() => {
+    function handleResize() {
+      setOpenWindows((currentWindows) => currentWindows.map(clampWindowFrame));
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!dragState) {
       return;
     }
@@ -117,15 +195,17 @@ export default function App() {
       const deltaY = event.clientY - currentDrag.startPointerY;
 
       setOpenWindows((currentWindows) =>
-        currentWindows.map((windowItem) =>
-          windowItem.id === currentDrag.windowId
-            ? {
-                ...windowItem,
-                x: currentDrag.startWindowX + deltaX,
-                y: currentDrag.startWindowY + deltaY,
-              }
-            : windowItem,
-        ),
+        currentWindows.map((windowItem) => {
+          if (windowItem.id !== currentDrag.windowId) {
+            return windowItem;
+          }
+
+          return clampWindowFrame({
+            ...windowItem,
+            x: currentDrag.startWindowX + deltaX,
+            y: currentDrag.startWindowY + deltaY,
+          });
+        }),
       );
     }
 
@@ -153,31 +233,18 @@ export default function App() {
       const deltaX = event.clientX - currentResize.startPointerX;
       const deltaY = event.clientY - currentResize.startPointerY;
 
-      const maxWidth = Math.max(MIN_WINDOW_WIDTH, window.innerWidth - 32);
-      const maxHeight = Math.max(MIN_WINDOW_HEIGHT, window.innerHeight - 70);
-
       setOpenWindows((currentWindows) =>
-        currentWindows.map((windowItem) =>
-          windowItem.id === currentResize.windowId
-            ? {
-                ...windowItem,
-                width: Math.min(
-                  maxWidth,
-                  Math.max(
-                    MIN_WINDOW_WIDTH,
-                    currentResize.startWindowWidth + deltaX,
-                  ),
-                ),
-                height: Math.min(
-                  maxHeight,
-                  Math.max(
-                    MIN_WINDOW_HEIGHT,
-                    currentResize.startWindowHeight + deltaY,
-                  ),
-                ),
-              }
-            : windowItem,
-        ),
+        currentWindows.map((windowItem) => {
+          if (windowItem.id !== currentResize.windowId) {
+            return windowItem;
+          }
+
+          return clampWindowFrame({
+            ...windowItem,
+            width: currentResize.startWindowWidth + deltaX,
+            height: currentResize.startWindowHeight + deltaY,
+          });
+        }),
       );
     }
 
@@ -206,10 +273,7 @@ export default function App() {
     });
   }
 
-  function startWindowDrag(
-    windowId: string,
-    event: PointerEvent<HTMLElement>,
-  ) {
+  function startWindowDrag(windowId: string, event: PointerEvent<HTMLElement>) {
     event.preventDefault();
 
     const selectedWindow = openWindows.find(
@@ -273,8 +337,12 @@ export default function App() {
         );
       }
 
-      const position = getWindowPosition(currentWindows);
       const size = getDefaultWindowSize();
+      const position = getWindowPosition(
+        currentWindows,
+        size.width,
+        size.height,
+      );
 
       return [
         ...currentWindows,
@@ -309,8 +377,13 @@ export default function App() {
         );
       }
 
-      const position = getWindowPosition(currentWindows);
       const size = getDefaultWindowSize();
+      const position = getWindowPosition(
+        currentWindows,
+        size.width,
+        size.height,
+      );
+
       const content = folderContent[folderId];
 
       return [
@@ -361,8 +434,6 @@ export default function App() {
             iconSrc={portfolioFolderIcon}
             onDoubleClick={openFinderWindow}
           />
-
-          <DesktopIcon label="Trash" iconSrc={trashIcon} />
         </div>
 
         {openWindows.map((windowItem) => (

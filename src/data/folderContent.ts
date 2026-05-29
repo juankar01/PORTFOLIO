@@ -20,8 +20,8 @@ export const folderContent: Record<FolderId, FolderContent> = {
       "Tecnologías y herramientas que uso actualmente en mi proceso de formación.",
     items: [
       "Frontend: HTML, CSS, JavaScript, React",
-      "Backend: Node.js, Express, MongoDB",
-      "Herramientas: Git, GitHub, VS Code, Postman",
+      "Backend: Node.js, Express",
+      "Base de datos: SQL, MongoDB",
       "Aprendiendo: TypeScript, buenas prácticas y responsive design",
     ],
   },
@@ -33,8 +33,17 @@ export const folderContent: Record<FolderId, FolderContent> = {
       "Proyectos académicos y prácticos donde he aplicado desarrollo web, organización de componentes e integración de funcionalidades.",
     items: [
       "UVOL — Red social de voluntariado",
-      "Landing page responsive",
-      "CRUD con frontend y backend",
+      "Landing page responsive de presentación",
+    ],
+    links: [
+      {
+        label: "Abrir landing de UVOL",
+        url: "https://uvol-landing.vercel.app/",
+      },
+      {
+        label: "Abrir red social UVOL",
+        url: "https://uvol-project-sena.vercel.app/login",
+      },
     ],
   },
 
@@ -45,9 +54,9 @@ export const folderContent: Record<FolderId, FolderContent> = {
       "Estoy disponible para realizar mi etapa práctica y abierto a oportunidades donde pueda aprender, aportar y crecer.",
     items: [
       "Correo: juanjoseotalvaro283@gmail.com",
-      "GitHub: ",
-      "LinkedIn: ",
-      "CV: ",
+      "GitHub: pendiente",
+      "LinkedIn: pendiente",
+      "CV: pendiente",
     ],
   },
 };
