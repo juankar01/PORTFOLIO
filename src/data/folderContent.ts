@@ -31,17 +31,14 @@ export const folderContent: Record<FolderId, FolderContent> = {
     subtitle: "Work Folder",
     description:
       "Proyectos académicos y prácticos donde he aplicado desarrollo web, organización de componentes e integración de funcionalidades.",
-    items: [
-      "UVOL — Red social de voluntariado",
-      "Landing page responsive de presentación",
-    ],
+    items: [],
     links: [
       {
-        label: "Abrir landing de UVOL",
+        label: "Landing page de UVOL",
         url: "https://uvol-landing.vercel.app/",
       },
       {
-        label: "Abrir red social UVOL",
+        label: "UVOL — Red social de voluntariado",
         url: "https://uvol-project-sena.vercel.app/login",
       },
     ],
