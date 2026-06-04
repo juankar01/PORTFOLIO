@@ -17,8 +17,6 @@ const WINDOWS_STORAGE_KEY = "retro-portfolio-open-windows";
 
 const DEFAULT_WINDOW_WIDTH = 900;
 const DEFAULT_WINDOW_HEIGHT = 500;
-const SYSTEM_WINDOW_WIDTH = 460;
-const SYSTEM_WINDOW_HEIGHT = 310;
 
 const MIN_WINDOW_WIDTH = 280;
 const MIN_WINDOW_HEIGHT = 280;
@@ -426,45 +424,6 @@ export default function App() {
           y: position.y,
           width: size.width,
           height: size.height,
-        },
-      ];
-    });
-  }
-
-  function openSystemInfoWindow() {
-    setOpenWindows((currentWindows) => {
-      const existingWindow = currentWindows.find(
-        (windowItem) => windowItem.id === "system-info",
-      );
-
-      const nextZIndex = getNextZIndex(currentWindows);
-
-      if (existingWindow) {
-        return currentWindows.map((windowItem) =>
-          windowItem.id === "system-info"
-            ? { ...windowItem, zIndex: nextZIndex }
-            : windowItem,
-        );
-      }
-
-      const width = Math.min(SYSTEM_WINDOW_WIDTH, getViewportLimits().maxWidth);
-      const height = Math.min(
-        SYSTEM_WINDOW_HEIGHT,
-        getViewportLimits().maxHeight,
-      );
-      const position = getWindowPosition(currentWindows, width, height);
-
-      return [
-        ...currentWindows,
-        {
-          id: "system-info",
-          type: "system",
-          title: "System Info",
-          zIndex: nextZIndex,
-          x: position.x,
-          y: position.y,
-          width,
-          height,
         },
       ];
     });
