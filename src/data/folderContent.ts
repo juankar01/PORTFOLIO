@@ -3,13 +3,14 @@ import type { FolderContent, FolderId } from "../types/portfolio";
 export const folderContent: Record<FolderId, FolderContent> = {
   profile: {
     title: "Perfil",
-    subtitle: "About this Student",
+    subtitle: "About me",
     description:
-      "Soy estudiante de Análisis y Desarrollo de Software, con interés en el desarrollo web, las interfaces limpias y la construcción de soluciones digitales útiles.",
+      "Me gusta crear proyectos que combinen buen diseño, lógica y funcionalidad. Disfruto construir interfaces claras, entender cómo funciona cada parte por detrás y organizar el código para que el resultado sea fácil de usar, mantener y mejorar.",
     items: [
-      "Enfoque: Desarrollo web",
-      "Estado: Buscando etapa práctica",
-      "Interés: Frontend, UI y proyectos reales",
+      "Me gusta el diseño limpio y las interfaces fáciles de usar",
+      "Disfruto entender la lógica detrás de cada funcionalidad",
+      "Trabajo con frontend, backend y bases de datos",
+      "Cuido la organización del código y los detalles del proyecto",
     ],
   },
 
@@ -17,12 +18,13 @@ export const folderContent: Record<FolderId, FolderContent> = {
     title: "Habilidades",
     subtitle: "Toolkit",
     description:
-      "Tecnologías y herramientas que uso actualmente en mi proceso de formación.",
+      "Tecnologías y herramientas que uso para construir proyectos web, desde la estructura visual hasta la lógica, la integración de datos y la organización del código.",
     items: [
       "Frontend: HTML, CSS, JavaScript, React",
       "Backend: Node.js, Express",
       "Base de datos: SQL, MongoDB",
-      "Aprendiendo: TypeScript, buenas prácticas y responsive design",
+      "Herramientas: Git, GitHub, VS Code, Postman",
+      "Aprendiendo/mejorando en nuevos lenguajes y frameworks",
     ],
   },
 
@@ -30,16 +32,26 @@ export const folderContent: Record<FolderId, FolderContent> = {
     title: "Proyectos",
     subtitle: "Work Folder",
     description:
-      "Proyectos académicos y prácticos donde he aplicado desarrollo web, organización de componentes e integración de funcionalidades.",
+      "Algunos proyectos donde he trabajado interfaces, rutas, conexión con backend e integración de funcionalidades.",
     items: [],
-    links: [
+    projects: [
       {
-        label: "Landing page de UVOL",
-        url: "https://uvol-landing.vercel.app/",
+        title: "UVOL — Red social de voluntariado",
+        description:
+          "Aplicación web enfocada en conectar personas con oportunidades de voluntariado.",
+        technologies: ["React", "Node.js", "Express", "MongoDB"],
+        role: "Trabajé en la estructura visual, presentación del contenido, diseño responsive y publicación del sitio.",
+        url: "https://uvol-project-sena.vercel.app/login",
+        actionLabel: "Abrir proyecto",
       },
       {
-        label: "UVOL — Red social de voluntariado",
-        url: "https://uvol-project-sena.vercel.app/login",
+        title: "UVOL Landing",
+        description:
+          "Página de presentación para explicar la idea principal del proyecto UVOL.",
+        technologies: ["React", "Vite", "Tailwind CSS"],
+        role: "Maquetación, diseño visual y responsive",
+        url: "https://uvol-landing.vercel.app/",
+        actionLabel: "Abrir landing",
       },
     ],
   },
@@ -47,13 +59,18 @@ export const folderContent: Record<FolderId, FolderContent> = {
   contact: {
     title: "Contacto",
     subtitle: "Contact File",
-    description:
-      "Estoy disponible para realizar mi etapa práctica y abierto a oportunidades donde pueda aprender, aportar y crecer.",
+    description: "Datos principales de contacto y hoja de vida actualizada.",
     items: [
       "Correo: juanjoseotalvaro283@gmail.com",
       "GitHub: pendiente",
       "LinkedIn: pendiente",
-      "CV: pendiente",
+    ],
+    links: [
+      {
+        label: "Descargar hoja de vida",
+        url: "/cv-juan-jose-otalvaro.pdf",
+        download: "cv-juan-jose-otalvaro.pdf",
+      },
     ],
   },
 };

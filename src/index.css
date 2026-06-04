@@ -57,6 +57,8 @@ button {
   border-bottom: 2px solid #000;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   padding: 0 18px;
   font-weight: 400;
   flex-shrink: 0;
@@ -68,6 +70,31 @@ button {
   gap: 30px;
   font-size: 24px;
   line-height: 1;
+  min-width: 0;
+}
+
+.menu-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.menu-clock {
+  background: #fff;
+  padding: 3px 8px;
+  font-size: 22px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.navbar-logo-button {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  user-select: none;
 }
 
 .navbar-logo {
@@ -88,10 +115,10 @@ button {
   padding: 24px;
   overflow: hidden;
 
-  background-color: #fff;
+  background-color: #c3c3c3;
   background-image:
-    radial-gradient(#000 0.9px, transparent 0.9px),
-    radial-gradient(#000 0.9px, transparent 0.9px);
+    radial-gradient(#8f8f8f 0.7px, transparent 0.7px),
+    radial-gradient(#eeeeee 0.7px, transparent 0.7px);
   background-position:
     0 0,
     2px 2px;
@@ -169,6 +196,56 @@ button {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  animation: window-open 140ms ease-out;
+  transform-origin: top left;
+}
+
+.finder-window-active {
+  box-shadow: 5px 5px 0 #000;
+  filter: none;
+}
+
+.finder-window-inactive {
+  box-shadow: 3px 3px 0 #777;
+  filter: grayscale(0.25);
+}
+
+.finder-window-inactive .window-header {
+  background: #e4e4e4;
+}
+
+.finder-window-inactive .window-title {
+  background: #e4e4e4;
+  color: #777;
+}
+
+.finder-window-closing {
+  animation: window-close 140ms ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes window-open {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes window-close {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
 }
 
 /* =========================
@@ -230,12 +307,15 @@ button {
   letter-spacing: 0;
 }
 
-/* Controles laterales */
+/* =========================
+   WINDOW CONTROLS
+========================= */
+
 .window-control {
   position: absolute;
-  top: 5px;
-  width: 22px;
-  height: 22px;
+  top: 7px;
+  width: 18px;
+  height: 18px;
   border: 2px solid #000;
   background: #efefef;
   z-index: 3;
@@ -243,7 +323,6 @@ button {
   cursor: pointer;
 }
 
-/* Botón izquierdo: volver */
 .window-back {
   left: 10px;
 }
@@ -251,16 +330,15 @@ button {
 .window-back::before {
   content: "";
   position: absolute;
-  left: 7px;
-  top: 5px;
-  width: 8px;
-  height: 8px;
-  border-left: 3px solid #4f4f8f;
-  border-bottom: 3px solid #4f4f8f;
+  left: 6px;
+  top: 4px;
+  width: 6px;
+  height: 6px;
+  border-left: 2px solid #4f4f8f;
+  border-bottom: 2px solid #4f4f8f;
   transform: rotate(45deg);
 }
 
-/* Botón derecho: cerrar */
 .window-close {
   right: 10px;
 }
@@ -269,9 +347,9 @@ button {
 .window-close::after {
   content: "";
   position: absolute;
-  left: 5px;
-  top: 9px;
-  width: 10px;
+  left: 4px;
+  top: 7px;
+  width: 8px;
   height: 2px;
   background: #4f4f8f;
 }
@@ -284,7 +362,6 @@ button {
   transform: rotate(-45deg);
 }
 
-/* Botón derecho: minimizar Portfolio Finder */
 .window-minimize {
   right: 10px;
 }
@@ -292,9 +369,9 @@ button {
 .window-minimize::before {
   content: "";
   position: absolute;
-  left: 5px;
-  bottom: 5px;
-  width: 10px;
+  left: 4px;
+  bottom: 4px;
+  width: 8px;
   height: 2px;
   background: #4f4f8f;
 }
@@ -514,6 +591,10 @@ button {
   max-width: 760px;
 }
 
+.folder-detail-links + .folder-detail-list {
+  margin-top: 18px;
+}
+
 .folder-detail-link {
   width: fit-content;
   max-width: 100%;
@@ -525,6 +606,9 @@ button {
   color: #000;
   text-decoration: none;
   box-shadow: 3px 3px 0 #000;
+  cursor: pointer;
+  display: inline-block;
+  text-align: left;
 }
 
 .folder-detail-link:hover,
@@ -532,6 +616,92 @@ button {
   background: #000;
   color: #fff;
   outline: none;
+}
+
+/* =========================
+   PROJECT CARDS
+========================= */
+
+.project-cards {
+  display: grid;
+  gap: 18px;
+  max-width: 760px;
+}
+
+.project-card {
+  background: #fff;
+  border: 2px solid #000;
+  padding: 16px;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.project-card h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.project-card p {
+  margin: 0 0 12px;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.project-techs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.project-techs span {
+  background: #efefef;
+  border: 2px solid #000;
+  padding: 4px 8px;
+  font-size: 14px;
+}
+
+.project-role {
+  font-size: 16px;
+}
+
+/* =========================
+   SYSTEM INFO
+========================= */
+
+.system-info-content {
+  flex: 1;
+  min-height: 0;
+  padding: 22px;
+  background: #efefef;
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  overflow: auto;
+}
+
+.system-badge {
+  width: fit-content;
+  border: 3px solid #000;
+  background: #fff;
+  padding: 12px 16px;
+  font-size: 22px;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.system-info-list {
+  display: grid;
+  gap: 10px;
+}
+
+.system-info-list div {
+  width: fit-content;
+  max-width: 100%;
+  background: #fff;
+  border: 2px solid #000;
+  padding: 7px 10px;
+  font-size: 17px;
+  box-shadow: 2px 2px 0 #000;
 }
 
 /* =========================
@@ -582,11 +752,22 @@ button {
   .menu-bar {
     height: 36px;
     padding: 0 10px;
+    gap: 10px;
   }
 
   .menu-left {
-    gap: 16px;
+    gap: 14px;
     font-size: 16px;
+  }
+
+  .menu-clock {
+    font-size: 14px;
+    padding: 2px 6px;
+  }
+
+  .navbar-logo-button {
+    width: 22px;
+    height: 22px;
   }
 
   .navbar-logo {
@@ -634,29 +815,29 @@ button {
   }
 
   .window-control {
-    width: 20px;
-    height: 20px;
-    top: 5px;
+    width: 18px;
+    height: 18px;
+    top: 6px;
   }
 
   .window-back::before {
     left: 6px;
-    top: 5px;
-    width: 7px;
-    height: 7px;
+    top: 4px;
+    width: 6px;
+    height: 6px;
   }
 
   .window-close::before,
   .window-close::after {
-    left: 5px;
-    top: 8px;
-    width: 9px;
+    left: 4px;
+    top: 7px;
+    width: 8px;
   }
 
   .window-minimize::before {
-    left: 5px;
-    bottom: 5px;
-    width: 9px;
+    left: 4px;
+    bottom: 4px;
+    width: 8px;
   }
 
   .window-info {
@@ -734,6 +915,30 @@ button {
 
   .folder-detail-item,
   .folder-detail-link {
+    font-size: 15px;
+  }
+
+  .folder-detail-links + .folder-detail-list {
+    margin-top: 14px;
+  }
+
+  .project-card h2 {
+    font-size: 18px;
+  }
+
+  .project-card p {
+    font-size: 15px;
+  }
+
+  .project-techs span {
+    font-size: 13px;
+  }
+
+  .system-badge {
+    font-size: 18px;
+  }
+
+  .system-info-list div {
     font-size: 15px;
   }
 }

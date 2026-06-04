@@ -17,6 +17,9 @@ const WINDOWS_STORAGE_KEY = "retro-portfolio-open-windows";
 
 const DEFAULT_WINDOW_WIDTH = 900;
 const DEFAULT_WINDOW_HEIGHT = 500;
+const SYSTEM_WINDOW_WIDTH = 460;
+const SYSTEM_WINDOW_HEIGHT = 310;
+
 const MIN_WINDOW_WIDTH = 280;
 const MIN_WINDOW_HEIGHT = 280;
 const DESKTOP_EDGE_PADDING = 12;
@@ -36,6 +39,14 @@ type ResizeState = {
   startWindowWidth: number;
   startWindowHeight: number;
 };
+
+function getCurrentTime() {
+  return new Intl.DateTimeFormat("es-CO", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date());
+}
 
 function getMenuBarHeight() {
   return window.innerWidth <= 768 ? 36 : 42;
@@ -164,8 +175,25 @@ export default function App() {
   const [openWindows, setOpenWindows] =
     useState<PortfolioWindow[]>(getStoredWindows);
 
+  const [currentTime, setCurrentTime] = useState(getCurrentTime);
+  const [closingWindowIds, setClosingWindowIds] = useState<string[]>([]);
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [resizeState, setResizeState] = useState<ResizeState | null>(null);
+
+  const highestZIndex =
+    openWindows.length > 0
+      ? Math.max(...openWindows.map((windowItem) => windowItem.zIndex))
+      : 0;
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setCurrentTime(getCurrentTime());
+    }, 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(WINDOWS_STORAGE_KEY, JSON.stringify(openWindows));
@@ -403,27 +431,84 @@ export default function App() {
     });
   }
 
+  function openSystemInfoWindow() {
+    setOpenWindows((currentWindows) => {
+      const existingWindow = currentWindows.find(
+        (windowItem) => windowItem.id === "system-info",
+      );
+
+      const nextZIndex = getNextZIndex(currentWindows);
+
+      if (existingWindow) {
+        return currentWindows.map((windowItem) =>
+          windowItem.id === "system-info"
+            ? { ...windowItem, zIndex: nextZIndex }
+            : windowItem,
+        );
+      }
+
+      const width = Math.min(SYSTEM_WINDOW_WIDTH, getViewportLimits().maxWidth);
+      const height = Math.min(
+        SYSTEM_WINDOW_HEIGHT,
+        getViewportLimits().maxHeight,
+      );
+      const position = getWindowPosition(currentWindows, width, height);
+
+      return [
+        ...currentWindows,
+        {
+          id: "system-info",
+          type: "system",
+          title: "System Info",
+          zIndex: nextZIndex,
+          x: position.x,
+          y: position.y,
+          width,
+          height,
+        },
+      ];
+    });
+  }
+
   function closeWindow(windowId: string) {
-    setOpenWindows((currentWindows) =>
-      currentWindows.filter((windowItem) => windowItem.id !== windowId),
-    );
+    if (closingWindowIds.includes(windowId)) {
+      return;
+    }
+
+    setClosingWindowIds((currentIds) => [...currentIds, windowId]);
+
+    window.setTimeout(() => {
+      setOpenWindows((currentWindows) =>
+        currentWindows.filter((windowItem) => windowItem.id !== windowId),
+      );
+
+      setClosingWindowIds((currentIds) =>
+        currentIds.filter((currentId) => currentId !== windowId),
+      );
+    }, 140);
   }
 
   return (
     <main className="desktop">
       <header className="menu-bar">
         <div className="menu-left">
-          <img
-            className="navbar-logo"
-            src={navbarLogo}
-            alt="Portfolio logo"
-            draggable={false}
-          />
+          <div className="navbar-logo-button" aria-hidden="true">
+            <img
+              className="navbar-logo"
+              src={navbarLogo}
+              alt="Portfolio logo"
+              draggable={false}
+            />
+          </div>
 
           <span>File</span>
           <span>Edit</span>
           <span>View</span>
           <span>Special</span>
+        </div>
+
+        <div className="menu-right">
+          <span className="menu-clock">{currentTime}</span>
         </div>
       </header>
 
@@ -442,6 +527,8 @@ export default function App() {
             windowItem={windowItem}
             folders={portfolioFolders}
             folderIconSrc={folderIcon}
+            isActive={windowItem.zIndex === highestZIndex}
+            isClosing={closingWindowIds.includes(windowItem.id)}
             onOpenFolder={openFolderWindow}
             onClose={() => closeWindow(windowItem.id)}
             onFocus={() => bringWindowToFront(windowItem.id)}

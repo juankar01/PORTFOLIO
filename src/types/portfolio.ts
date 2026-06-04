@@ -9,6 +9,16 @@ export type FolderItem = {
 export type FolderLink = {
   label: string;
   url: string;
+  download?: string;
+};
+
+export type FolderProject = {
+  title: string;
+  description: string;
+  technologies: string[];
+  role: string;
+  url: string;
+  actionLabel: string;
 };
 
 export type FolderContent = {
@@ -17,9 +27,10 @@ export type FolderContent = {
   description: string;
   items: string[];
   links?: FolderLink[];
+  projects?: FolderProject[];
 };
 
-export type PortfolioWindowType = "finder" | "folder";
+export type PortfolioWindowType = "finder" | "folder" | "system";
 
 export type PortfolioWindow = {
   id: string;

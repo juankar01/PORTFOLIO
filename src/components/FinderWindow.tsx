@@ -8,6 +8,8 @@ type FinderWindowProps = {
   windowItem: PortfolioWindow;
   folders: FolderItem[];
   folderIconSrc: string;
+  isActive: boolean;
+  isClosing: boolean;
   onOpenFolder: (folderId: FolderId) => void;
   onClose: () => void;
   onFocus: () => void;
@@ -19,6 +21,8 @@ export default function FinderWindow({
   windowItem,
   folders,
   folderIconSrc,
+  isActive,
+  isClosing,
   onOpenFolder,
   onClose,
   onFocus,
@@ -29,7 +33,30 @@ export default function FinderWindow({
     ? folderContent[windowItem.folderId]
     : null;
 
-  const isFolderWindow = windowItem.type === "folder" && selectedContent !== null;
+  const isFolderWindow =
+    windowItem.type === "folder" && selectedContent !== null;
+
+  async function handleDownload(url: string, fileName: string) {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      console.error("No se pudo descargar el archivo");
+      return;
+    }
+
+    const blob = await response.blob();
+    const objectUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+
+    link.remove();
+    window.URL.revokeObjectURL(objectUrl);
+  }
 
   function renderLinks() {
     if (!selectedContent?.links?.length) {
@@ -38,24 +65,122 @@ export default function FinderWindow({
 
     return (
       <div className="folder-detail-links">
-        {selectedContent.links.map((link) => (
-          <a
-            key={link.url}
-            className="folder-detail-link"
-            href={link.url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {link.label}
-          </a>
+        {selectedContent.links.map((link) =>
+          link.download ? (
+            <button
+              key={link.url}
+              type="button"
+              className="folder-detail-link"
+              onClick={() => handleDownload(link.url, link.download!)}
+            >
+              {link.label}
+            </button>
+          ) : (
+            <a
+              key={link.url}
+              className="folder-detail-link"
+              href={link.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {link.label}
+            </a>
+          ),
+        )}
+      </div>
+    );
+  }
+
+  function renderItems() {
+    if (!selectedContent?.items.length) {
+      return null;
+    }
+
+    return (
+      <div className="folder-detail-list">
+        {selectedContent.items.map((item) => (
+          <div key={item} className="folder-detail-item">
+            {item}
+          </div>
         ))}
       </div>
     );
   }
 
+  function renderProjects() {
+    if (!selectedContent?.projects?.length) {
+      return null;
+    }
+
+    return (
+      <div className="project-cards">
+        {selectedContent.projects.map((project) => (
+          <article key={project.url} className="project-card">
+            <h2>{project.title}</h2>
+
+            <p>{project.description}</p>
+
+            <div className="project-techs">
+              {project.technologies.map((tech) => (
+                <span key={tech}>{tech}</span>
+              ))}
+            </div>
+
+            <p className="project-role">{project.role}</p>
+
+            <a
+              className="folder-detail-link"
+              href={project.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {project.actionLabel}
+            </a>
+          </article>
+        ))}
+      </div>
+    );
+  }
+
+  function renderContactContent() {
+    if (!selectedContent) {
+      return null;
+    }
+
+    const [emailItem, ...pendingItems] = selectedContent.items;
+
+    return (
+      <>
+        <p className="folder-detail-description">
+          {selectedContent.description}
+        </p>
+
+        {emailItem && (
+          <div className="folder-detail-list">
+            <div className="folder-detail-item">{emailItem}</div>
+          </div>
+        )}
+
+        {renderLinks()}
+
+        {pendingItems.length > 0 && (
+          <div className="folder-detail-list">
+            {pendingItems.map((item) => (
+              <div key={item} className="folder-detail-item">
+                {item}
+              </div>
+            ))}
+          </div>
+        )}
+      </>
+    );
+  }
+
   return (
     <section
-      className="finder-window"
+      className={`finder-window ${
+        isActive ? "finder-window-active" : "finder-window-inactive"
+      } ${isClosing ? "finder-window-closing" : ""}`}
       onMouseDown={onFocus}
       style={{
         left: `${windowItem.x}px`,
@@ -120,14 +245,7 @@ export default function FinderWindow({
                       {selectedContent.description}
                     </p>
 
-                    <div className="folder-detail-list">
-                      {selectedContent.items.map((item) => (
-                        <div key={item} className="folder-detail-item">
-                          {item}
-                        </div>
-                      ))}
-                    </div>
-
+                    {renderItems()}
                     {renderLinks()}
                   </div>
 
@@ -140,20 +258,23 @@ export default function FinderWindow({
                     />
                   </div>
                 </div>
+              ) : windowItem.folderId === "projects" ? (
+                <>
+                  <p className="folder-detail-description">
+                    {selectedContent.description}
+                  </p>
+
+                  {renderProjects()}
+                </>
+              ) : windowItem.folderId === "contact" ? (
+                renderContactContent()
               ) : (
                 <>
                   <p className="folder-detail-description">
                     {selectedContent.description}
                   </p>
 
-                  <div className="folder-detail-list">
-                    {selectedContent.items.map((item) => (
-                      <div key={item} className="folder-detail-item">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-
+                  {renderItems()}
                   {renderLinks()}
                 </>
               )}
