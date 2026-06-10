@@ -5,12 +5,11 @@ export const folderContent: Record<FolderId, FolderContent> = {
     title: "Perfil",
     subtitle: "About me",
     description:
-      "Me gusta crear proyectos que combinen buen diseño, lógica y funcionalidad. Disfruto construir interfaces claras, entender cómo funciona cada parte por detrás y organizar el código para que el resultado sea fácil de usar, mantener y mejorar.",
+      "Soy estudiante de Análisis y Desarrollo de Software, con bases en desarrollo web frontend y backend. Me interesa crear soluciones funcionales, bien organizadas y fáciles de usar, combinando diseño de interfaces, lógica de programación y conexión con bases de datos.",
     items: [
-      "Me gusta el diseño limpio y las interfaces fáciles de usar",
+      "Me interesa el frontend, el diseño de interfaces y la experiencia de usuario",
       "Disfruto entender la lógica detrás de cada funcionalidad",
-      "Trabajo con frontend, backend y bases de datos",
-      "Cuido la organización del código y los detalles del proyecto",
+      "Me gusta trabajar de forma organizada, colaborativa y con disposición para aprender",
     ],
   },
 
@@ -20,10 +19,10 @@ export const folderContent: Record<FolderId, FolderContent> = {
     description:
       "Tecnologías y herramientas que uso para construir proyectos web, desde la estructura visual hasta la lógica, la integración de datos y la organización del código.",
     items: [
-      "Frontend: HTML, CSS, JavaScript, React",
+      "Frontend: HTML, CSS, JavaScript, React, vite, tailwindcss",
       "Backend: Node.js, Express",
-      "Base de datos: SQL, MongoDB",
-      "Herramientas: Git, GitHub, VS Code, Postman",
+      "Base de datos: SQL, MongoDB, mongoose",
+      "Herramientas: Git, GitHub",
       "Aprendiendo/mejorando en nuevos lenguajes y frameworks",
     ],
   },
@@ -40,7 +39,7 @@ export const folderContent: Record<FolderId, FolderContent> = {
         description:
           "Aplicación web enfocada en conectar personas con oportunidades de voluntariado.",
         technologies: ["React", "Node.js", "Express", "MongoDB"],
-        role: "Trabajé en la estructura visual, presentación del contenido, diseño responsive y publicación del sitio.",
+        role: "Lideré el proyecto formativo, coordinando tareas e integración de módulos. Desarrollé funcionalidades frontend y backend en perfil y mensajería.",
         url: "https://uvol-project-sena.vercel.app/login",
         actionLabel: "Abrir proyecto",
       },
@@ -59,7 +58,7 @@ export const folderContent: Record<FolderId, FolderContent> = {
   contact: {
     title: "Contacto",
     subtitle: "Contact File",
-    description: "Datos principales de contacto y hoja de vida actualizada.",
+    description: "Datos principales de contacto y hoja de vida.",
     items: [
       "Correo: juanjoseotalvaro283@gmail.com",
       "GitHub: pendiente",
